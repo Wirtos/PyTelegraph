@@ -11,14 +11,7 @@ def raw_fields_generator(args):
 
 
 def field_generator(**args):
-    datargs = ''
-    for length, i in enumerate(args.items(), 1):
-        if i[1]:
-            if length == len(args):
-                datargs += '\"{}\"'.format(i[0])
-            else:
-                datargs += '\"{}\",'.format(i[0])
-    return str('[{}]'.format(datargs))
+    return raw_fields_generator(args.keys())
 
 
 class Telegraph:
