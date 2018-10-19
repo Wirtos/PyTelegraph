@@ -7,7 +7,7 @@ import datetime
 
 
 def raw_fields_generator(args):
-    return '[{}]'.format(','.join('"{}"'.format(i + 1) for i in range(len(args))))
+    return '[{}]'.format(','.join(map('"{}"'.format, args)))
 
 
 def field_generator(**args):
