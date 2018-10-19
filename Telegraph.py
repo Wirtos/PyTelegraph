@@ -7,14 +7,7 @@ import datetime
 
 
 def raw_fields_generator(args):
-    datargs = ''
-    for length, i in enumerate(args, 1):
-
-        if length == len(args):
-            datargs += '\"{}\"'.format(i)
-        else:
-            datargs += '\"{}\",'.format(i)
-    return str('[{}]'.format(datargs))
+    return '[{}]'.format(','.join('"{}"'.format(i + 1) for i in range(len(args))))
 
 
 def field_generator(**args):
