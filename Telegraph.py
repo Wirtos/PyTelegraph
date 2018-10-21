@@ -1,30 +1,26 @@
-from urllib.parse import urlencode
-from urllib.request import Request, urlopen
+import requests
 import json
 from Exceptions import exceptions_raise
+from Types import Account, Page, PageList, PageViews
 import os
 import datetime
-
+from uuid import uuid4
+from io import BytesIO
+import mimetypes
+import re
 
 def raw_fields_generator(args):
-    datargs = ''
-    for length, i in enumerate(args, 1):
-
-        if length == len(args):
-            datargs += '\"{}\"'.format(i)
-        else:
-            datargs += '\"{}\",'.format(i)
-    return str('[{}]'.format(datargs))
+    return json.dumps(args)
 
 
 def field_generator(**args):
     datargs = ''
-    for length, i in enumerate(args.items(), 1):
-        if i[1]:
+    for length, item in enumerate(args.items(), 1):
+        if item[1]:
             if length == len(args):
-                datargs += '\"{}\"'.format(i[0])
+                datargs += '"{}"'.format(item[0])
             else:
-                datargs += '\"{}\",'.format(i[0])
+                datargs += '"{}",'.format(item[0])
     return str('[{}]'.format(datargs))
 
 
@@ -39,6 +35,7 @@ class Telegraph:
         r = self.get_account_info(auth_url=True)
         r['valid_to'] = datetime.datetime.now() + datetime.timedelta(minutes=5)
         return r
+
     def save_data(self, token, session_name):
         if not session_name:
             return
@@ -59,13 +56,10 @@ class Telegraph:
         for i, x in post_fields.copy().items():
             if x is None:
                 del post_fields[i]
-        final_request = Request(self.base_url + method, urlencode(post_fields).encode())
-        j = urlopen(final_request).read()
-        j = json.loads(j)
+        j = requests.post(self.base_url + method, post_fields).json()
         if not j['ok']:
             raise exceptions_raise[j['error']]
-        print(j['result'])
-        return j['result']
+        return j["result"]
 
     def start(self, short_name=None, author_name=None, author_url=None):
         if self.session:
@@ -94,7 +88,7 @@ class Telegraph:
             'author_name': author_name,
             'author_url': author_url
         }
-        return self.request('createAccount', params)
+        return Account(**self.request('createAccount', params))
 
     def edit_account_info(self, short_name='', author_name='', author_url='', access_token=''):
         if not access_token:
@@ -105,7 +99,7 @@ class Telegraph:
             'author_name': author_name,
             'author_url': author_url
         }
-        return self.request('editAccountInfo', params)
+        return Account(**self.request('editAccountInfo', params))
 
     def get_account_info_raw(self, fields=(), access_token=''):
         if not access_token:
@@ -114,7 +108,7 @@ class Telegraph:
             'access_token': access_token,
             'fields': raw_fields_generator(fields),
         }
-        return self.request('getAccountInfo', params)
+        return Account(**self.request('getAccountInfo', params))
 
     def get_account_info(self, short_name=False, author_name=False, author_url=False, auth_url=False, page_count=False,
                          access_token=''):
@@ -125,7 +119,7 @@ class Telegraph:
             'access_token': access_token,
             'fields': fields,
         }
-        return self.request('getAccountInfo', params)
+        return Account(**self.request('getAccountInfo', params))
 
     def revoke_access_token(self, access_token=''):
         if not access_token:
@@ -152,7 +146,7 @@ class Telegraph:
             'return_content': return_content,
 
         }
-        return self.request('createPage', params)
+        return Page(**self.request('createPage', params))
 
     def edit_page(self, path='', title=None, author_name=None, author_url=None, content=None, return_content=False,
                   access_token=''):
@@ -168,15 +162,15 @@ class Telegraph:
             'return_content': return_content,
 
         }
-        return self.request('editPage', params)
+        return Page(**self.request('editPage', params))
 
     def get_page(self, path='', return_content=False):
         params = {
-            'path': path,
+            'path': re.sub('(http[s]?://)?telegra.ph/', '', path, flags=re.I),
             'return_content': return_content,
 
         }
-        return self.request('getPage', params)
+        return Page(**self.request('getPage', params))
 
     def get_page_list(self, offset=0, limit=50, access_token=''):
         if not access_token:
@@ -187,7 +181,7 @@ class Telegraph:
             'limit': limit,
 
         }
-        return self.request('getPageList', params)
+        return PageList(**self.request('getPageList', params))
 
     def get_views(self, path, year=None, month=None, day=None, hour=None):
         params = {
@@ -198,6 +192,20 @@ class Telegraph:
             'hour': hour
 
         }
-        return self.request('getViews', params)
+        return PageViews(**self.request('getViews', params))
 
+    @staticmethod
+    def upload_image(image):
+        if isinstance(image, str):
+            with open(image, 'rb') as image_data:
+                files = {'file': (f'{uuid4()}', image_data.read(), mimetypes.guess_type(image)[0])}
 
+        elif isinstance(image, BytesIO):
+            files = {'file': (f'{uuid4()}', image.read(), "image/png")}
+        else:
+            raise ValueError("Invalid image type")
+        r = requests.post('https://telegra.ph/upload/', files=files)
+        if not type(r.json()) is not list:
+            return r.json()[0]['src']
+        else:
+            raise exceptions_raise[r.json()['error']]

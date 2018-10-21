@@ -48,6 +48,10 @@ class YearMissing(TelegraphError):
     pass
 
 
+class ServerError(TelegraphError):
+    pass
+
+
 exceptions_raise = {
     'SHORT_NAME_REQUIRED': ShortNameRequired,
     'ACCESS_TOKEN_INVALID': AccessTokenInvalid,
@@ -58,6 +62,7 @@ exceptions_raise = {
     'DAY_MISSING': DayMissing,
     'MONTH_MISSING': MonthMissing,
     'YEAR_MISSING': YearMissing,
-    'AUTHOR_URL_INVALID': AuthorUrlInvalid
+    'AUTHOR_URL_INVALID': AuthorUrlInvalid,
+    'Server error': ServerError
 
 }
