@@ -1,13 +1,14 @@
 import requests
 import json
 from Exceptions import exceptions_raise
-from Types import Account, Page, PageList, PageViews
+from Types import Account, Page, PageList, PageViews, NodeElement, Node
 import os
 import datetime
 from uuid import uuid4
 from io import BytesIO
 import mimetypes
 import re
+
 
 def raw_fields_generator(args):
     return json.dumps(args)
@@ -90,9 +91,8 @@ class Telegraph:
         }
         return Account(**self.request('createAccount', params))
 
-    def edit_account_info(self, short_name='', author_name='', author_url='', access_token=''):
-        if not access_token:
-            access_token = self.token
+    def edit_account_info(self, short_name=None, author_name=None, author_url=None):
+        access_token = self.token
         params = {
             'access_token': access_token,
             'short_name': short_name,
@@ -101,9 +101,8 @@ class Telegraph:
         }
         return Account(**self.request('editAccountInfo', params))
 
-    def get_account_info_raw(self, fields=(), access_token=''):
-        if not access_token:
-            access_token = self.token
+    def get_account_info_raw(self, fields=()):
+        access_token = self.token
         params = {
             'access_token': access_token,
             'fields': raw_fields_generator(fields),
@@ -121,9 +120,8 @@ class Telegraph:
         }
         return Account(**self.request('getAccountInfo', params))
 
-    def revoke_access_token(self, access_token=''):
-        if not access_token:
-            access_token = self.token
+    def revoke_access_token(self):
+        access_token = self.token
         params = {
             'access_token': access_token,
         }
@@ -133,22 +131,26 @@ class Telegraph:
             self.save_data(self.token, self.session)
         return j
 
-    def create_page(self, title='', author_name='', author_url='', content='', return_content=False, access_token=''):
-        # TODO: NODE PAGE CREATOR
-        if not access_token:
-            access_token = self.token
+    def create_page(self, title, content, author_name='', author_url='', return_content=False):
+        access_token = self.token
+        userdata = self.get_account_info_raw(['author_name', 'author_url'])
+        if not author_name:
+            author_name = userdata.author_name
+        if not author_url:
+            author_url = userdata.author_url
+
         params = {
             'access_token': access_token,
             'title': title,
             'author_name': author_name,
             'author_url': author_url,
-            'content': content,
+            'content': str(content),
             'return_content': return_content,
 
         }
         return Page(**self.request('createPage', params))
 
-    def edit_page(self, path='', title=None, author_name=None, author_url=None, content=None, return_content=False,
+    def edit_page(self, path, title=None, author_name=None, author_url=None, content=None, return_content=False,
                   access_token=''):
         if not access_token:
             access_token = self.token
@@ -164,7 +166,7 @@ class Telegraph:
         }
         return Page(**self.request('editPage', params))
 
-    def get_page(self, path='', return_content=False):
+    def get_page(self, path, return_content=False):
         params = {
             'path': re.sub('(http[s]?://)?telegra.ph/', '', path, flags=re.I),
             'return_content': return_content,
@@ -172,9 +174,8 @@ class Telegraph:
         }
         return Page(**self.request('getPage', params))
 
-    def get_page_list(self, offset=0, limit=50, access_token=''):
-        if not access_token:
-            access_token = self.token
+    def get_page_list(self, offset=0, limit=50):
+        access_token = self.token
         params = {
             'access_token': access_token,
             'offset': offset,

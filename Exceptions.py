@@ -12,6 +12,14 @@ class ShortNameRequired(TelegraphError):
     pass
 
 
+class TitleRequired(TelegraphError):
+    pass
+
+
+class ContentRequired(TelegraphError):
+    pass
+
+
 class AccessTokenInvalid(TelegraphError):
     pass
 
@@ -25,6 +33,10 @@ class FieldsFormatInvalid(TelegraphError):
 
 
 class PageNotFound(TelegraphError):
+    pass
+
+
+class ContentFormatInvalid(TelegraphError):
     pass
 
 
@@ -54,15 +66,18 @@ class ServerError(TelegraphError):
 
 exceptions_raise = {
     'SHORT_NAME_REQUIRED': ShortNameRequired,
+    'TITLE_REQUIRED': TitleRequired,
+    'CONTENT_REQUIRED': ContentRequired,
     'ACCESS_TOKEN_INVALID': AccessTokenInvalid,
     'FIELDS_FORMAT_INVALID': FieldsFormatInvalid,
     'PAGE_NOT_FOUND': PageNotFound,
+    'CONTENT_FORMAT_INVALID': ContentFormatInvalid,
     'YEAR_INVALID': YearInvalid,
     'MONTH_INVALID': MonthInvalid,
     'DAY_MISSING': DayMissing,
     'MONTH_MISSING': MonthMissing,
     'YEAR_MISSING': YearMissing,
     'AUTHOR_URL_INVALID': AuthorUrlInvalid,
-    'Server error': ServerError
+    'Server error': ServerError,
 
 }

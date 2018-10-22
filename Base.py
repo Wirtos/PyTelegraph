@@ -2,7 +2,6 @@ class Lst(list):
     """
     Like `Obj` but for lists.
     """
-
     def __init__(self, iterable=()):
         list.__init__(self, (Obj(**x) if isinstance(x, dict) else (
             Lst(x) if isinstance(x, list) else x) for x in iterable))
@@ -19,30 +18,25 @@ class Lst(list):
         return super().__repr__() + repr(self.to_dict())
 
     def to_dict(self):
-        return {k: v.to_dict() if isinstance(v, Obj) else v
-                for k, v in self.__dict__.items()}
-
+        return [v.to_dict() if isinstance(v, (Obj, Lst)) else v
+for v in self]
 
 class Obj:
     """
     Class to avoid dictionary-like access and ``None`` values.
-
     For instance:
         >>> lonami = Obj(name='lonami', hobby='developer')
         >>> print(lonami.name, 'is', lonami.age or 20)
         >>>
         >>> lonami.friend.name = 'kate'
         >>> print(lonami.friend)
-
+        >>>
     If you expect a different type you should use ``or value``, as
     empty `Obj` instances are considered to be ``False``.
-
     You can convert `Obj` instances back to ``dict`` with `.to_dict()`.
-
     If a member name is a reserved keyword, like ``from``, add a trailing
     underscore, like ``from_``.
     """
-
     def __init__(self, **kwargs):
         self.__dict__ = {k: Obj(**v) if isinstance(v, dict) else (
             Lst(v) if isinstance(v, list) else v) for k, v in kwargs.items()}
@@ -84,7 +78,7 @@ class Obj:
         return Obj()
 
     def to_dict(self):
-        return {k: v.to_dict() if isinstance(v, Obj) else v
+        return {k: v.to_dict() if isinstance(v, (Obj, Lst)) else v
                 for k, v in self.__dict__.items()}
 
     @staticmethod

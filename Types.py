@@ -13,7 +13,7 @@ class Account(Obj):
 
 class Page(Obj):
     __available_kwargs = (
-    'path', 'url', 'title', 'description', 'author_name', 'author_url', 'image_url', 'content', 'views', 'can_edit')
+        'path', 'url', 'title', 'description', 'author_name', 'author_url', 'image_url', 'content', 'views', 'can_edit')
 
     def __init__(self, **kwargs):
         for i in kwargs:
@@ -43,21 +43,37 @@ class PageViews:
         super(PageViews, self).__init__(**kwargs)
 
 
-class Node:
-    __available_tags = ('a', 'aside', 'b', 'blockquote', 'br', 'code', 'em', 'figcaption', 'figure', 'h3', 'h4', 'hr', 'i', 'iframe', 'img', 'li', 'ol', 'p', 'pre', 's', 'strong', 'u', 'ul', 'video')
+class NodeElement(Obj):
+    __available_tags = (
+        'a', 'aside', 'b', 'blockquote', 'br', 'code', 'em', 'figcaption', 'figure', 'h3', 'h4', 'hr', 'i', 'iframe',
+        'img',
+        'li', 'ol', 'p', 'pre', 's', 'strong', 'u', 'ul', 'video')
+    __available_attrs = ('href', 'src')
 
-    def __init__(self, string, tag):
+    def __init__(self, tag, children=None, attrs=None):
         if tag not in self.__available_tags:
-            raise ValueError('Invalid tag')
-        self.tag = tag
-        self.string = string
+            raise ValueError(f'Invalid tag: {tag}')
+
+        if attrs:
+            for atr in attrs.keys():
+                if atr not in self.__available_attrs:
+                    raise ValueError(f'Invalid attr: {atr}')
+
+        super(NodeElement, self).__init__(tag=tag, attrs=attrs, children=children)
+        for i, x in self.__dict__.copy().items():
+            if x is None:
+                del self.__dict__[i]
+
+
+class Node:
+    def __init__(self, *node_element):
+        self.node_array = []
+        if node_element is not None:
+            for elem in node_element:
+                self.node_array.append(elem)
 
     def __str__(self):
-        return self.generator()
+        return f'{self.node_array}'.replace('\'', '\"')
 
-    def generator(self):
-        return f'<{self.tag}>{self.string}</{self.tag}>'
-
-
-class NodeElement:
-    pass
+    def append(self, node):
+        self.node_array.append(node)
