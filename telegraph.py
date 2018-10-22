@@ -1,7 +1,7 @@
 import requests
 import json
-from Exceptions import exceptions_raise
-from Types import Account, Page, PageList, PageViews, NodeElement, Node
+from exceptions import exceptions_raise
+from types import Account, Page, PageList, PageViews, NodeElement, Node
 import os
 import datetime
 from uuid import uuid4
