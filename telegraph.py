@@ -1,5 +1,4 @@
 import requests
-import json
 from exceptions import exceptions_raise
 from types import Account, Page, PageList, PageViews, NodeElement, Node
 import os
@@ -11,18 +10,11 @@ import re
 
 
 def raw_fields_generator(args):
-    return json.dumps(args)
+    return '[{}]'.format(','.join(map('"{}"'.format, args)))
 
 
 def field_generator(**args):
-    datargs = ''
-    for length, item in enumerate(args.items(), 1):
-        if item[1]:
-            if length == len(args):
-                datargs += '"{}"'.format(item[0])
-            else:
-                datargs += '"{}",'.format(item[0])
-    return str('[{}]'.format(datargs))
+    return raw_fields_generator(args.keys())
 
 
 class Telegraph:
@@ -37,7 +29,8 @@ class Telegraph:
         r['valid_to'] = datetime.datetime.now() + datetime.timedelta(minutes=5)
         return r
 
-    def save_data(self, token, session_name):
+    @staticmethod
+    def save_data(token, session_name):
         if not session_name:
             return
         with open("{}.token".format(session_name), 'w', encoding='utf-8') as tk:
