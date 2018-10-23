@@ -1,6 +1,6 @@
 import requests
-from exceptions import exceptions_raise
-from types import Account, Page, PageList, PageViews, NodeElement, Node
+from tel_exceptions import exceptions_raise
+from tel_types import Account, Page, PageList, PageViews, NodeElement, Node
 import os
 import datetime
 from uuid import uuid4

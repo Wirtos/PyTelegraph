@@ -1,4 +1,4 @@
-from base import Obj
+from tel_base import Obj
 
 
 class Account(Obj):
