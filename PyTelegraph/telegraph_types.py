@@ -1,5 +1,5 @@
 from .telegraph_base import Obj
-from json import dumps as jsdumps
+from json import dumps as jsondumps
 
 
 class Account(Obj):
@@ -71,10 +71,10 @@ class Node:
         self.node_array = []
         if node_element is not None:
             for elem in node_element:
-                self.node_array.append(jsdumps(elem))
+                self.node_array.append(jsondumps(elem.to_dict()))
 
     def __str__(self):
-        return str(self.node_array)
+        return ', '.join(self.node_array)
 
     def append(self, node):
-        self.node_array.append(node)
+        self.node_array.append(jsondumps(node.to_dict()))

@@ -8,6 +8,10 @@ class TelegraphError(Exception):
         return '{}'.format(self.message)
 
 
+class ContentTextRequired(TelegraphError):
+    pass
+
+
 class ShortNameRequired(TelegraphError):
     pass
 
@@ -83,6 +87,7 @@ exceptions_raise = {
     'YEAR_MISSING': YearMissing,
     'AUTHOR_URL_INVALID': AuthorUrlInvalid,
     'Server error': ServerError,
-    'FIELDS_EMPTY': FieldsEmpty
+    'FIELDS_EMPTY': FieldsEmpty,
+    'CONTENT_TEXT_REQUIRED': ContentTextRequired
 
 }

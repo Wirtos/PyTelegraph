@@ -1,6 +1,7 @@
 .idea
 dist
 build
+PyTelegraph.egg-info
 .venv
 __pycache__/
 *.pyc
