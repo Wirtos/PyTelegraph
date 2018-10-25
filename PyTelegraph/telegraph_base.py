@@ -2,6 +2,7 @@ class Lst(list):
     """
     Like `Obj` but for lists.
     """
+
     def __init__(self, iterable=()):
         list.__init__(self, (Obj(**x) if isinstance(x, dict) else (
             Lst(x) if isinstance(x, list) else x) for x in iterable))
@@ -19,7 +20,8 @@ class Lst(list):
 
     def to_dict(self):
         return [v.to_dict() if isinstance(v, (Obj, Lst)) else v
-for v in self]
+                for v in self]
+
 
 class Obj:
     """
@@ -37,6 +39,7 @@ class Obj:
     If a member name is a reserved keyword, like ``from``, add a trailing
     underscore, like ``from_``.
     """
+
     def __init__(self, **kwargs):
         self.__dict__ = {k: Obj(**v) if isinstance(v, dict) else (
             Lst(v) if isinstance(v, list) else v) for k, v in kwargs.items()}

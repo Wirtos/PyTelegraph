@@ -1,4 +1,5 @@
-from tel_base import Obj
+from .telegraph_base import Obj
+from json import dumps as jsdumps
 
 
 class Account(Obj):
@@ -52,12 +53,12 @@ class NodeElement(Obj):
 
     def __init__(self, tag, children=None, attrs=None):
         if tag not in self.__available_tags:
-            raise ValueError(f'Invalid tag: {tag}')
+            raise ValueError('Invalid tag: {}'.format(tag))
 
         if attrs:
             for atr in attrs.keys():
                 if atr not in self.__available_attrs:
-                    raise ValueError(f'Invalid attr: {atr}')
+                    raise ValueError('Invalid attr: {}'.format(atr))
 
         super(NodeElement, self).__init__(tag=tag, attrs=attrs, children=children)
         for i, x in self.__dict__.copy().items():
@@ -70,10 +71,10 @@ class Node:
         self.node_array = []
         if node_element is not None:
             for elem in node_element:
-                self.node_array.append(elem)
+                self.node_array.append(jsdumps(elem))
 
     def __str__(self):
-        return f'{self.node_array}'.replace('\'', '\"')
+        return str(self.node_array)
 
     def append(self, node):
         self.node_array.append(node)

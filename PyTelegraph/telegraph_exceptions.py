@@ -64,6 +64,10 @@ class ServerError(TelegraphError):
     pass
 
 
+class FieldsEmpty(TelegraphError):
+    pass
+
+
 exceptions_raise = {
     'SHORT_NAME_REQUIRED': ShortNameRequired,
     'TITLE_REQUIRED': TitleRequired,
@@ -79,5 +83,6 @@ exceptions_raise = {
     'YEAR_MISSING': YearMissing,
     'AUTHOR_URL_INVALID': AuthorUrlInvalid,
     'Server error': ServerError,
+    'FIELDS_EMPTY': FieldsEmpty
 
 }

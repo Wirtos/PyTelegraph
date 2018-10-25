@@ -1,20 +1,21 @@
 import requests
-from tel_exceptions import exceptions_raise
-from tel_types import Account, Page, PageList, PageViews, NodeElement, Node
+from .telegraph_exceptions import exceptions_raise
+from .telegraph_types import Account, Page, PageList, PageViews, NodeElement, Node
 import os
 import datetime
 from uuid import uuid4
-from io import BytesIO
 import mimetypes
 import re
 
+__version__ = 0.3
+
 
 def raw_fields_generator(args):
-    return '[{}]'.format(','.join(map('"{}"'.format, args)))
+    return '[{}]'.format(','.join(['"{0}"'.format(arg) for arg in args]))
 
 
 def field_generator(**args):
-    return raw_fields_generator(args.keys())
+    return raw_fields_generator([key for key, value in args.items() if value is True])
 
 
 class Telegraph:
@@ -102,10 +103,8 @@ class Telegraph:
         }
         return Account(**self.request('getAccountInfo', params))
 
-    def get_account_info(self, short_name=False, author_name=False, author_url=False, auth_url=False, page_count=False,
-                         access_token=''):
-        if not access_token:
-            access_token = self.token
+    def get_account_info(self, short_name=None, author_name=None, author_url=None, auth_url=None, page_count=None):
+        access_token = self.token
         fields = field_generator(**locals())
         params = {
             'access_token': access_token,
@@ -192,10 +191,7 @@ class Telegraph:
     def upload_image(image):
         if isinstance(image, str):
             with open(image, 'rb') as image_data:
-                files = {'file': (f'{uuid4()}', image_data.read(), mimetypes.guess_type(image)[0])}
-
-        elif isinstance(image, BytesIO):
-            files = {'file': (f'{uuid4()}', image.read(), "image/png")}
+                files = {'file': (str(uuid4()), image_data.read(), mimetypes.guess_type(image)[0])}
         else:
             raise ValueError("Invalid image type")
         r = requests.post('https://telegra.ph/upload/', files=files)
