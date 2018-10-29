@@ -74,7 +74,7 @@ class Node:
                 self.node_array.append(jsondumps(elem.to_dict()))
 
     def __str__(self):
-        return ', '.join(self.node_array)
+        return '[' + ', '.join(self.node_array) + ']'
 
     def append(self, node):
         self.node_array.append(jsondumps(node.to_dict()))
