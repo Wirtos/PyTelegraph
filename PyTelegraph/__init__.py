@@ -150,7 +150,7 @@ class Telegraph:
             'access_token': access_token,
             'path': path,
             'title': title,
-            'content': content,
+            'content': str(content),
             'author_name': author_name,
             'author_url': author_url,
             'return_content': return_content,

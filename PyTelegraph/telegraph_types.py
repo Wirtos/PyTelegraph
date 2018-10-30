@@ -66,15 +66,15 @@ class NodeElement(Obj):
                 del self.__dict__[i]
 
 
-class Node:
+class Node(object):
     def __init__(self, *node_element):
         self.node_array = []
         if node_element is not None:
             for elem in node_element:
-                self.node_array.append(jsondumps(elem.to_dict()))
+                self.node_array.append(elem.to_dict())
 
     def __str__(self):
-        return '[' + ', '.join(self.node_array) + ']'
+        return jsondumps(self.node_array)
 
     def append(self, node):
-        self.node_array.append(jsondumps(node.to_dict()))
+        self.node_array.append(node.to_dict())
