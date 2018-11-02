@@ -49,16 +49,17 @@ class NodeElement(Obj):
         'a', 'aside', 'b', 'blockquote', 'br', 'code', 'em', 'figcaption', 'figure', 'h3', 'h4', 'hr', 'i', 'iframe',
         'img',
         'li', 'ol', 'p', 'pre', 's', 'strong', 'u', 'ul', 'video')
-    __available_attrs = ('href', 'src')
+    __available_attrs = ('href', 'src', 'id')
 
     def __init__(self, tag, children=None, attrs=None):
         if tag not in self.__available_tags:
             raise ValueError('Invalid tag: {}'.format(tag))
-
         if attrs:
             for atr in attrs.keys():
                 if atr not in self.__available_attrs:
                     raise ValueError('Invalid attr: {}'.format(atr))
+        if children:
+            children = [x for x in children if x is not None]
 
         super(NodeElement, self).__init__(tag=tag, attrs=attrs, children=children)
         for i, x in self.__dict__.copy().items():
@@ -71,10 +72,22 @@ class Node(object):
         self.node_array = []
         if node_element is not None:
             for elem in node_element:
-                self.node_array.append(elem.to_dict())
+                if isinstance(elem, NodeElement):
+                    self.node_array.append(elem.to_dict())
 
     def __str__(self):
         return jsondumps(self.node_array)
 
-    def append(self, node):
-        self.node_array.append(node.to_dict())
+    def append(self, *node_element):
+        if node_element is not None:
+            for elem in node_element:
+                if isinstance(elem, NodeElement):
+                    self.node_array.append(elem.to_dict())
+
+    def fromHTML(self, html):
+        pass
+
+    def toHTML(self):
+        pass
+
+

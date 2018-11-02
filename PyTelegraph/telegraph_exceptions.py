@@ -5,7 +5,7 @@ class TelegraphError(Exception):
         self.message = message
 
     def __str__(self):
-        return '{}'.format(self.message)
+        return self.message
 
 
 class ContentTextRequired(TelegraphError):
@@ -72,6 +72,10 @@ class FieldsEmpty(TelegraphError):
     pass
 
 
+class PageSaveFailed(TelegraphError):
+    pass
+
+
 exceptions_raise = {
     'SHORT_NAME_REQUIRED': ShortNameRequired,
     'TITLE_REQUIRED': TitleRequired,
@@ -88,6 +92,7 @@ exceptions_raise = {
     'AUTHOR_URL_INVALID': AuthorUrlInvalid,
     'Server error': ServerError,
     'FIELDS_EMPTY': FieldsEmpty,
-    'CONTENT_TEXT_REQUIRED': ContentTextRequired
+    'CONTENT_TEXT_REQUIRED': ContentTextRequired,
+    'PAGE_SAVE_FAILED': PageSaveFailed('You can\'t use that title'),
 
 }
