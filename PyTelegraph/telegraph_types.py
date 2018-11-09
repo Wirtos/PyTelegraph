@@ -1,5 +1,7 @@
 from .telegraph_base import Obj
 from json import dumps as jsondumps
+from bs4 import BeautifulSoup
+from bs4.element import NavigableString
 
 
 class Account(Obj):
@@ -84,10 +86,31 @@ class Node(object):
                 if isinstance(elem, NodeElement):
                     self.node_array.append(elem.to_dict())
 
+    @staticmethod
+    def __toNODE(lst, content=False):
+        temp_list = []
+        if not content:
+            try:
+                return NodeElement(tag=lst.name,
+                                   children=[lst.text, *Node.__toNODE(lst.children, content=True)],
+                                   attrs=lst.attrs)
+            except ValueError:
+                pass
+        else:
+            for elem in lst:
+                if not isinstance(elem, NavigableString):
+                    try:
+                        temp_list.append(NodeElement(tag=elem.name,
+                                                     children=[elem.text, *Node.__toNODE(elem.children, content=True)],
+                                                     attrs=elem.attrs))
+                    except ValueError:
+                        pass
+        return temp_list
+
     def fromHTML(self, html):
-        pass
+        soup = BeautifulSoup(html, 'lxml')
+        for i in soup.find_all():
+            self.append(Node.__toNODE(i))
 
     def toHTML(self):
         pass
-
-
