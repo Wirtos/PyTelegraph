@@ -15,6 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=[
         'requests>=2.19.1',
+        'bs4>=0.0.1'
     ],
     classifiers=(
         "Programming Language :: Python :: 3",
